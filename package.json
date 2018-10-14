@@ -1,0 +1,29 @@
+{
+  "name": "lean-itunes",
+  "version": "1.0.0",
+  "description": "iTunes search app for lean station front end assignment",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint ./script.js --fix"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/itsmadhusudhan/leanstation-challenge.git"
+  },
+  "keywords": [
+    "vanilla",
+    "js"
+  ],
+  "author": "Madhusudhan R",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/itsmadhusudhan/leanstation-challenge/issues"
+  },
+  "homepage": "https://github.com/itsmadhusudhan/leanstation-challenge#readme",
+  "devDependencies": {
+    "eslint": "^5.7.0",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-plugin-import": "^2.14.0"
+  }
+}
