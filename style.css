@@ -24,6 +24,15 @@ h1,h2,h3,h4,h5,h6,a,li,ul{
   height:50px;
 }
 
+/* results style */
+.i-results{
+  max-width: 1150px;
+  margin:0 auto;
+  display:grid;
+  grid-template-columns: repeat(3,1fr);
+}
+
+
 /* tune card */
 .i-tune__card{
   width:250px;
