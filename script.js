@@ -5,7 +5,7 @@ let data = [];
 const search = document.querySelector('.i-search');
 const results = document.querySelector('.i-results');
 
-const favouriteList = [];
+let favouriteList = [];
 let loading = true;
 const getSearchResults = (e) => {
   const value = e.target.value;
@@ -37,6 +37,7 @@ const createTuneCard = (results) => {
       <p class="i-tune__card--album" data-track-id=${result.trackId}>${result.collectionName}</p>
       <p class="i-tune__card--album" data-track-id=${result.trackId}>${milliSecondsToMinutes(result.trackTimeMillis)}</p>
       </div>
+      <p class="i-tune__card--favourite"  data-track-id=${result.trackId}>add to favourite</p>
     </div>`
   }).join('');
 
@@ -57,11 +58,24 @@ const handleClick = function (e) {
   getTrackDetails(trackId);
 }
 
+const handleFavourites = (e) => {
+  const trackId = e.target.getAttribute('data-track-id');
+  favouriteList=filterFavourites(favouriteList, trackId)
+  console.log(favouriteList)
+}
+
+const filterFavourites = (list, id) => {
+  console.log(list.includes(id));
+  return list.includes(id) ? list.filter(track => track !== id) : [...list,id];  
+}
+
 const processResults = data => {
   const html = createTuneCard(data.results);
   results.innerHTML = html;
   const cards = document.querySelectorAll('.i-tune__card');
-  cards.forEach(card => card.addEventListener('click', handleClick))
+  cards.forEach(card => card.addEventListener('click', handleClick));
+  const favouriteBtn = document.querySelectorAll('.i-tune__card--favourite');
+  favouriteBtn.forEach(btn => btn.addEventListener('click', handleFavourites))
 }
 
 const ProcessTuneDetails = data => {
@@ -73,7 +87,5 @@ const milliSecondsToMinutes = (milliSeconds) => {
   return Math.floor(milliSeconds / 60000) + "m"
 }
 
-
-// console.log(data)
 search.addEventListener('keyup', getSearchResults);
 

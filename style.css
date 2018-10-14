@@ -29,10 +29,6 @@ h1,h2,h3,h4,h5,h6,a,li,ul,p{
   justify-content: center;
 }
 
-.i-search__icon{
-  /* background:#333; */
-}
-
 .i-search{
   box-shadow: 1px 2px 20px rgba(0,0,0,0.2);
   outline: 0;
