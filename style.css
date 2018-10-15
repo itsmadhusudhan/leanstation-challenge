@@ -52,6 +52,16 @@ h1,h2,h3,h4,h5,h6,a,li,ul,p{
   border-radius: 4px;
 }
 
+/* favourite list */
+.i-favourite__list{
+  box-shadow: 1px 2px 20px rgba(0,0,0,0.25);
+  max-width:160px;
+  text-align: center;
+  cursor: pointer;
+  padding:10px;
+  margin:0 auto;
+}
+
 /* results style */
 .i-results{
   max-width: 1150px;
@@ -69,6 +79,7 @@ h1,h2,h3,h4,h5,h6,a,li,ul,p{
   cursor: pointer;
   margin: 20px;
   padding:0;
+  position: relative;
 }
 
 .i-tune__card--image{
@@ -83,12 +94,15 @@ h1,h2,h3,h4,h5,h6,a,li,ul,p{
   padding:10px 10px 0 15px;
 }
 
-
-/* tune card modal style */
-.i-tune__card--container{
-
+.i-tune__card--favourite{
+  height:20px;
+  position: absolute;
+  top:10px;
+  right:10px;
+  background-color: #fff;
 }
 
+/* tune card modal style */
 .i-tune__modal{
   display: flex;
   justify-content: center;
@@ -104,7 +118,7 @@ h1,h2,h3,h4,h5,h6,a,li,ul,p{
   visibility: hidden;
   opacity: 0;
   transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
-  background: transparent;
+  background:rgba(0,0,0,0.7);
 }
 
 .i-tune__modal--active {
@@ -113,8 +127,10 @@ h1,h2,h3,h4,h5,h6,a,li,ul,p{
 }
 
 .i-tune__modal--dialog{
+  position: relative;
   min-width: 650px;
   padding: 30px;
+  z-index: 120;
 }
 
 .i-tune__modal--content{
@@ -125,6 +141,7 @@ h1,h2,h3,h4,h5,h6,a,li,ul,p{
   box-shadow: 0 12px 15px 0 rgba(0,0,0,0.25);
   opacity: 0;
   transition: all 0.25s cubic-bezier(0.23, 1, 0.32, 1);
+  z-index: 150;
 }
 
 .i-tune__modal--content-active{
@@ -133,7 +150,8 @@ h1,h2,h3,h4,h5,h6,a,li,ul,p{
 
 .i-modal__close{
   position: absolute;
-  right: 20px;
-  top:20px;
+  right: 45px;
+  top:40px;
   cursor: pointer;
+  z-index: 200;
 }
