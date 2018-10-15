@@ -72,9 +72,6 @@
     result.trackId
   }>${milliSecondsToMinutes(result.trackTimeMillis)}</p>
 	</div>
-	<img src="./images/like.svg" class="i-tune__card--favourite"  data-track-id=${
-    result.trackId
-  }></img>
     </div>`
       )
       .join("");
@@ -205,10 +202,18 @@
   };
 
   const fetchFavourites = () => {
-    let promises =!fetched && favouriteList.map(favourite => {
-      return  getTrackDetails(favourite);
-    });
-    !fetched && Promise.all(promises).then(details => renderFavourites(details));
+    if (favouriteList.length !== 0) {
+      let promises =
+        !fetched &&
+        favouriteList.map(favourite => {
+          return getTrackDetails(favourite);
+        });
+      !fetched &&
+        Promise.all(promises).then(details => renderFavourites(details));
+    }
+    else{
+      results.innerHTML="no favourites"
+    }
   };
 
   const init = () => {
