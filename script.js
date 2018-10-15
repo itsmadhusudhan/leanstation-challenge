@@ -7,11 +7,11 @@
   const results = document.querySelector(".i-results");
   const modal = document.querySelector(".i-tune__modal");
   const modalContent = document.querySelector(".i-tune__modal--content");
-  const list=document.querySelector('.i-favourite__list');
+  const list = document.querySelector(".i-favourite__list");
 
   // empty array to store favourtite track list
-  let favouriteList = JSON.parse(localStorage.getItem('favourites'))||[];
-  console.log(favouriteList)
+  let favouriteList = JSON.parse(localStorage.getItem("favourites")) || [];
+  console.log(favouriteList);
 
   /**
    * @param {number} milliSeconds
@@ -95,9 +95,19 @@
    */
   const handleFavourites = e => {
     const trackId = e.target.getAttribute("data-track-id");
+    favouriteList = JSON.parse(localStorage.getItem("favourites")) || [];
     favouriteList = filterFavourites(favouriteList, trackId);
-    localStorage.setItem('favourites', JSON.stringify(favouriteList));
+    localStorage.setItem("favourites", JSON.stringify(favouriteList));
     console.log(favouriteList);
+  };
+
+  const initCardEvents = () => {
+    const cards = document.querySelectorAll(".i-tune__card");
+    cards.forEach(card => card.addEventListener("click", handleClick));
+    const favouriteBtn = document.querySelectorAll(".i-tune__card--favourite");
+    favouriteBtn.forEach(btn =>
+      btn.addEventListener("click", handleFavourites)
+    );
   };
 
   /**
@@ -107,12 +117,7 @@
   const processResults = data => {
     const html = createTuneCard(data.results);
     results.innerHTML = html;
-    const cards = document.querySelectorAll(".i-tune__card");
-    cards.forEach(card => card.addEventListener("click", handleClick));
-    const favouriteBtn = document.querySelectorAll(".i-tune__card--favourite");
-    favouriteBtn.forEach(btn =>
-      btn.addEventListener("click", handleFavourites)
-    );
+    initCardEvents();
   };
 
   /**
@@ -130,16 +135,11 @@
   /**
    * * @param {*} e
    */
-  const getSearchResults = e => {
-    const value = e.target.value;
-    value
-      ? fetch(`${url + value}&media=music&entity=song`)
-          .then(res => res.json())
-          .then(tunes => {
-            processResults(tunes);
-          })
-          .catch(err => console.log(err))
-      : (results.innerHTML = "");
+  const getSearchResults = value => {
+    return fetch(`${url + value}&media=music&entity=song`)
+      .then(res => res.json())
+      .then(tunes => tunes)
+      .catch(err => console.log(err));
   };
 
   /**
@@ -148,13 +148,13 @@
    */
   const getTrackDetails = trackId => {
     // console.log(trackId);
-    trackId &&
+    return (
+      trackId &&
       fetch(url2 + trackId)
         .then(res => res.json())
-        .then(details => {
-          ProcessTuneDetails(details);
-        })
-        .catch(err => console.log(err));
+        .then(details => details)
+        .catch(err => console.log(err))
+    );
   };
 
   const openModal = () => {
@@ -166,6 +166,13 @@
     modal.classList.remove("i-tune__modal--active");
     modalContent.classList.remove("i-tune__modal--content-active");
     modalContent.innerHTML = "";
+  };
+
+  const handleSearchResults = e => {
+    const value = e.target.value;
+    value
+      ? getSearchResults(value).then(tunes => processResults(tunes))
+      : (results.innerHTML = "");
   };
 
   /**
@@ -180,16 +187,30 @@
       trackId !== null
         ? true
         : false;
-    proceed && getTrackDetails(trackId);
+    proceed &&
+      getTrackDetails(trackId).then(details => ProcessTuneDetails(details));
     proceed && openModal();
   };
 
+  const renderFavourites = details => {
+    const favhtml = details
+      .map(detail => createTuneCard(detail.results))
+      .join("");
+    results.innerHTML = favhtml;
+    initCardEvents()
+  };
+
+  const fetchFavourites = () => {
+    let promises = favouriteList.map(favourite => {
+      return getTrackDetails(favourite);
+    });
+    Promise.all(promises).then(details => renderFavourites(details));
+  };
+
   const init = () => {
-    search.addEventListener("keyup", getSearchResults);
+    search.addEventListener("keyup", handleSearchResults);
     modal.addEventListener("click", closeModal);
-    list.addEventListener('click',()=>{
-      console.log("hello")
-    })
+    list.addEventListener("click", fetchFavourites);
   };
 
   init();
