@@ -5,7 +5,8 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "eslint ./script.js --fix"
+    "lint": "eslint ./script.js --fix",
+    "ci": "yarn run lint --fix"
   },
   "repository": {
     "type": "git",

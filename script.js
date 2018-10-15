@@ -14,33 +14,50 @@ let favouriteList = [];
  */
 const milliSecondsToMinutes = milliSeconds => `${Math.floor(milliSeconds / 60000)}m`;
 
-
 /**
  *
  * @param {Object[]} cardResults
  * @returns {String}
  */
-const createTuneCard = cardResults => cardResults.map(result => `
+const createTuneCard = cardResults => cardResults
+  .map(
+    result => `
     <div class="i-tune__card"  data-track-id=${result.trackId}>
     <img src=${result.artworkUrl100} class="i-tune__card--image"/>
     <div class="i-tune__card--details" data-track-id=${result.trackId}>
-      <h3 class="i-tune__card--title" data-track-id=${result.trackId}>${result.trackCensoredName}</h3>
-      <p class="i-tune__card--album" data-track-id=${result.trackId}>${result.collectionName}</p>
-      <p class="i-tune__card--album" data-track-id=${result.trackId}>${milliSecondsToMinutes(result.trackTimeMillis)}</p>
+      <h3 class="i-tune__card--title" data-track-id=${result.trackId}>${
+  result.trackCensoredName
+}</h3>
+      <p class="i-tune__card--album" data-track-id=${result.trackId}>${
+  result.collectionName
+}</p>
+      <p class="i-tune__card--album" data-track-id=${
+  result.trackId
+}>${milliSecondsToMinutes(result.trackTimeMillis)}</p>
       </div>
-      <p class="i-tune__card--favourite"  data-track-id=${result.trackId}>add to favourite</p>
-    </div>`).join('');
+      <p class="i-tune__card--favourite"  data-track-id=${
+  result.trackId
+}>add to favourite</p>
+    </div>`,
+  )
+  .join('');
 
 /**
  *
  * @param {Object[]} details
  * @return {String}
  */
-const createTuneDetailsModal = details => details.map(result => `
+const createTuneDetailsModal = details => details
+  .map(
+    result => `
     <div class="i-tune__card--modal">
     <h2 class="i-tune__card--title">${result.trackCensoredName}</h2>
-      <h2 class="i-tune__card--title" data-track-id=${result.trackId}>${result.trackId}</h2>
-    </div>`).join('');
+      <h2 class="i-tune__card--title" data-track-id=${result.trackId}>${
+  result.trackId
+}</h2>
+    </div>`,
+  )
+  .join('');
 
 /**
  *
@@ -84,17 +101,19 @@ const ProcessTuneDetails = (data) => {
   // const html=createTuneDetailsModal(data.results);
 };
 
-/*
+/**
  * * @param {*} e
  */
 const getSearchResults = (e) => {
   const value = e.target.value;
-  value ? fetch(`${url + value}&media=music&entity=song`)
-    .then(res => res.json())
-    .then((tunes) => {
-      processResults(tunes);
-    })
-    .catch(err => console.log(err)) : results.innerHTML = '';
+  value
+    ? fetch(`${url + value}&media=music&entity=song`)
+      .then(res => res.json())
+      .then((tunes) => {
+        processResults(tunes);
+      })
+      .catch(err => console.log(err))
+    : (results.innerHTML = '');
 };
 
 /**
@@ -103,12 +122,13 @@ const getSearchResults = (e) => {
  */
 const getTrackDetails = (trackId) => {
   // console.log(trackId);
-  trackId && fetch(url2 + trackId)
-    .then(res => res.json())
-    .then((details) => {
-      ProcessTuneDetails(details);
-    })
-    .catch(err => console.log(err));
+  trackId
+		&& fetch(url2 + trackId)
+		  .then(res => res.json())
+		  .then((details) => {
+		    ProcessTuneDetails(details);
+		  })
+		  .catch(err => console.log(err));
 };
 
 /**
@@ -119,6 +139,5 @@ const handleClick = (e) => {
   const trackId = e.target.getAttribute('data-track-id');
   getTrackDetails(trackId);
 };
-
 
 search.addEventListener('keyup', getSearchResults);
