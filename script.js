@@ -8,6 +8,7 @@
   const modal = document.querySelector(".i-tune__modal");
   const modalContent = document.querySelector(".i-tune__modal--content");
   const list = document.querySelector(".i-favourite__list");
+  let fetched = false;
 
   // empty array to store favourtite track list
   let favouriteList = JSON.parse(localStorage.getItem("favourites")) || [];
@@ -98,6 +99,8 @@
     favouriteList = JSON.parse(localStorage.getItem("favourites")) || [];
     favouriteList = filterFavourites(favouriteList, trackId);
     localStorage.setItem("favourites", JSON.stringify(favouriteList));
+    fetched = false;
+    // fetchFavourites()
     console.log(favouriteList);
   };
 
@@ -197,14 +200,15 @@
       .map(detail => createTuneCard(detail.results))
       .join("");
     results.innerHTML = favhtml;
-    initCardEvents()
+    initCardEvents();
+    fetched = true;
   };
 
   const fetchFavourites = () => {
-    let promises = favouriteList.map(favourite => {
-      return getTrackDetails(favourite);
+    let promises =!fetched && favouriteList.map(favourite => {
+      return  getTrackDetails(favourite);
     });
-    Promise.all(promises).then(details => renderFavourites(details));
+    !fetched && Promise.all(promises).then(details => renderFavourites(details));
   };
 
   const init = () => {
