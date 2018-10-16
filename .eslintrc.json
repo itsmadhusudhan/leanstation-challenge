@@ -8,6 +8,7 @@
         "no-unused-vars":"off",
         "no-use-before-define":"off",
         "no-tabs":"off",
-        "no-mixed-spaces-and-tabs":"off"
+        "no-mixed-spaces-and-tabs":"off",
+        "func-names":"off"
     }
 }
