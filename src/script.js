@@ -154,8 +154,6 @@
     fetched = false;
     Pubsub.emit("updated favourites", favouriteList);
     // fetchFavourites()
-    console.log(Pubsub.events);
-    console.log(favouriteList);
   };
 
   /**
@@ -185,7 +183,6 @@
    * @param {*} data
    */
   const ProcessTuneDetails = data => {
-    console.log(data);
     const html = createTuneDetailsModal(data.results);
     modalContent.innerHTML = html;
     const modalClose = document.querySelector(".i-modal__close");
@@ -207,7 +204,7 @@
    * @param {number} trackId
    */
   const getTrackDetails = trackId => {
-    // console.log(trackId);
+    console.log(trackId);
     return (
       trackId &&
       fetch(url2 + trackId)
@@ -282,6 +279,8 @@
     console.log("renderfavourites: " + fetched);
   };
 
+  const cleanTrackId=(tid)=>tid.replace('/','')
+
   /**
    * fetches the favouritelist trackids by resolving all promises at once
    */
@@ -294,7 +293,7 @@
       let promises =
         !fetched &&
         favouriteList.map(favourite => {
-          return getTrackDetails(favourite);
+          return getTrackDetails(cleanTrackId(favourite));
         });
       !fetched &&
         Promise.all(promises).then(details => renderFavourites(details));
