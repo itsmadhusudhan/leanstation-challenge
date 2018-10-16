@@ -8,7 +8,7 @@
   const modal = document.querySelector('.i-tune__modal');
   const modalContent = document.querySelector('.i-tune__modal--content');
   const list = document.querySelector('.i-favourite__list');
-  let fetched = false;
+  let fetchedFavourites = false;
 
   /**
    * a small observer pattern library I made to watch and update the favourite list UI
@@ -140,7 +140,7 @@
     favouriteList = JSON.parse(localStorage.getItem('favourites')) || [];
     favouriteList = filterFavourites(favouriteList, trackId);
     localStorage.setItem('favourites', JSON.stringify(favouriteList));
-    fetched = false;
+    fetchedFavourites = false;
     Pubsub.emit('updated favourites', favouriteList);
     // fetchFavourites()
   };
@@ -188,15 +188,13 @@
    *
    * @param {number} trackId
    */
-  const getTrackDetails = (trackId) => {
-    return (
-      trackId
+  const getTrackDetails = trackId => (
+    trackId
       && fetch(url2 + trackId)
         .then(res => res.json())
         .then(details => details)
         .catch(err => console.log(err))
-    );
-  };
+  );
 
   /**
    * it opens the modal by adding classes
@@ -226,7 +224,7 @@
     value
       ? getSearchResults(value).then(tunes => processResults(tunes))
       : (results.innerHTML = '');
-    fetched = false;
+    fetchedFavourites = false;
     Pubsub.clear('updated favourites');
   };
 
@@ -257,7 +255,7 @@
       .join('');
     results.innerHTML = favhtml;
     initCardEvents();
-    fetched = true;
+    fetchedFavourites = true;
   };
 
   const cleanTrackId = tid => tid.replace('/', '');
@@ -269,9 +267,9 @@
     Pubsub.watch('updated favourites', fetchFavourites);
     search.value = '';
     if (favouriteList.length !== 0) {
-      const promises = !fetched
+      const promises = !fetchedFavourites
         && favouriteList.map(favourite => getTrackDetails(cleanTrackId(favourite)));
-      !fetched
+      !fetchedFavourites
         && Promise.all(promises).then(details => renderFavourites(details));
     } else {
       results.innerHTML = 'no favourites';
