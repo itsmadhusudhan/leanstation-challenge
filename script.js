@@ -8,7 +8,36 @@
   const modal = document.querySelector(".i-tune__modal");
   const modalContent = document.querySelector(".i-tune__modal--content");
   const list = document.querySelector(".i-favourite__list");
-  let fetched = false;
+	let fetched = false;
+	
+/**
+ * a small observer pattern library I made to watch and update the favourite list UI
+ * it has only 
+ * one object events to store call backs
+ * watch()=> watches an event to occur and pushes the callback to that event name array
+ * emit()=> when some change event occurs it calls the callbacks of that event and passes the data to them
+ * clear()=> when it is called it clears the event name array 
+ */
+const Pubsub={
+	events:{},
+	watch:function(eventName,cb){
+		console.log(eventName)
+		this.events[eventName]=this.events[eventName]||[];
+		this.events[eventName].push(cb)
+	},
+	emit:function(eventName,data){
+		console.log(eventName)
+		if(this.events[eventName] && this.events[eventName].length!==0){
+			this.events[eventName].forEach(event=>event(data))
+		}
+	},
+	clear:function(eventName){
+		console.log(eventName)
+		if(this.events[eventName]){
+			this.events[eventName]=[];
+		}
+	}
+}
 
   // empty array to store favourtite track list
   let favouriteList = JSON.parse(localStorage.getItem("favourites")) || [];
@@ -96,11 +125,16 @@
     favouriteList = JSON.parse(localStorage.getItem("favourites")) || [];
     favouriteList = filterFavourites(favouriteList, trackId);
     localStorage.setItem("favourites", JSON.stringify(favouriteList));
-    fetched = false;
-    // fetchFavourites()
+		fetched = false;
+		Pubsub.emit("updated favourites",favouriteList)
+		// fetchFavourites()
+		console.log(Pubsub.events)		
     console.log(favouriteList);
   };
 
+	/**
+	 * initiales the events on  dom elements of card
+	 */
   const initCardEvents = () => {
     const cards = document.querySelectorAll(".i-tune__card");
     cards.forEach(card => card.addEventListener("click", handleClick));
@@ -157,22 +191,36 @@
     );
   };
 
+	/**
+	 * it opens the modal by adding classes
+	 */
   const openModal = () => {
     modal.classList.add("i-tune__modal--active");
     modalContent.classList.add("i-tune__modal--content-active");
   };
 
-  const closeModal = () => {
+	/**
+	 * 
+	 * @param {Node} e 
+	 * closes the modal by removing classes
+	 */
+  const closeModal = (e) => {
     modal.classList.remove("i-tune__modal--active");
     modalContent.classList.remove("i-tune__modal--content-active");
     modalContent.innerHTML = "";
   };
 
+	/**
+	 * 
+	 * @param {*} e 
+	 */
   const handleSearchResults = e => {
     const value = e.target.value;
     value
       ? getSearchResults(value).then(tunes => processResults(tunes))
-      : (results.innerHTML = "");
+			: (results.innerHTML = "");
+		fetched=false;
+		Pubsub.clear('updated favourites')
   };
 
   /**
@@ -180,8 +228,8 @@
    * @param {*} e
    */
   const handleClick = e => {
+		e.stopPropagation()
     const trackId = e.target.getAttribute("data-track-id");
-    // console.log(trackId);
     let proceed =
       !e.target.classList.contains("i-tune__card--favourite") &&
       trackId !== null
@@ -192,16 +240,29 @@
     proceed && openModal();
   };
 
+	/**
+	 * 
+	 * @param {Object} details 
+	 * takes details object and renders 
+	 */
   const renderFavourites = details => {
     const favhtml = details
       .map(detail => createTuneCard(detail.results))
       .join("");
     results.innerHTML = favhtml;
     initCardEvents();
-    fetched = true;
+		fetched = true;
+		console.log("renderfavourites: "+fetched)		
   };
 
+	/**
+	 * fetches the favouritelist trackids by resolving all promises at once
+	 */
   const fetchFavourites = () => {
+		console.log("fetchfavourites: "+fetched)
+		console.log(Pubsub.events)
+		Pubsub.watch('updated favourites',fetchFavourites)
+		search.value="";
     if (favouriteList.length !== 0) {
       let promises =
         !fetched &&
@@ -213,14 +274,17 @@
     }
     else{
       results.innerHTML="no favourites"
-    }
+		}
   };
 
+	/**
+	 * main function that adds events on search, modal and list and calls callback
+	 */
   const init = () => {
     search.addEventListener("keyup", handleSearchResults);
     modal.addEventListener("click", closeModal);
     list.addEventListener("click", fetchFavourites);
   };
-
   init();
 })();
+
