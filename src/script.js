@@ -129,7 +129,7 @@
    * @returns {number[]}
    */
   // eslint-disable-next-line
-  const filterFavourites = (myList, id) => (myList.includes(id) ? myList.filter(track => track !== id) : [...ist, id]);
+  const filterFavourites = (myList, id) => (myList.includes(id) ? myList.filter(track => track !== id) : [...myList, id]);
 
   /**
    *  * @param {*} e
