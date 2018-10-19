@@ -66,17 +66,17 @@
         return `
                 <div class="i-tune__card"  data-track-id=${trackId}>
                 <img src=${artworkUrl100} class="i-tune__card--image"/>
-                <div class="i-tune__card--details" data-track-id=${trackId}>
+                <div class="i-tune__card--details">
                 <p class="i-meta">Song name:</p>
-                  <h3 class="i-tune__card--title" data-track-id=${trackId}>${trackCensoredName}</h3>
+                  <h3 class="i-tune__card--title">${trackCensoredName}</h3>
                 <p class="i-meta">Album name:</p>
-                  <p class="i-tune__card--album" data-track-id=${trackId}>${collectionName}</p>
+                  <p class="i-tune__card--album">${collectionName}</p>
                     <p class="i-meta">Artist Name:</p>
                     <p class="i-tune__card--name">${artistName}</p>
                     <p class="i-meta">Time:</p>
-                  <p class="i-tune__card--album" data-track-id=${trackId}>${milliSecondsToMinutes(
-          trackTimeMillis
-        )}</p>
+                  <p class="i-tune__card--album">${milliSecondsToMinutes(
+    trackTimeMillis,
+  )}</p>
         <img src="./images/like.svg" class="i-tune__card--favourite"  data-track-id=${trackId}/>
                   </div>
                 </div>`;
@@ -140,15 +140,14 @@
   /**
    *  * @param {*} e
    */
-  const handleFavourites = e => {
-    const trackId = e.target.getAttribute("data-track-id");
-    e.target.classList.toggle("i-tune__card--favourite-liked");
-    favouriteList = JSON.parse(localStorage.getItem("favourites")) || [];
+  const handleFavourites = (e) => {
+    const trackId = e.currentTarget.getAttribute('data-track-id');
+    e.currentTarget.classList.toggle('i-tune__card--favourite-liked');
+    favouriteList = JSON.parse(localStorage.getItem('favourites')) || [];
     favouriteList = filterFavourites(favouriteList, trackId);
     localStorage.setItem("favourites", JSON.stringify(favouriteList));
     fetchedFavourites = false;
-    Pubsub.emit("updated favourites", favouriteList);
-    // fetchFavourites()
+    Pubsub.emit('updated favourites', favouriteList);
   };
 
   /**
@@ -227,8 +226,8 @@
    *
    * @param {*} e
    */
-  const handleSearchResults = e => {
-    const value = e.target.value;
+  const handleSearchResults = (e) => {
+    const value = e.currentTarget.value;
     value
       ? getSearchResults(value).then(tunes => processResults(tunes))
       : (results.innerHTML = "");
@@ -240,10 +239,8 @@
    *
    * @param {*} e
    */
-  const handleClick = e => {
-    const trackId =
-      e.target.getAttribute("data-track-id") ||
-      e.target.parentNode.getAttribute("data-track-id");
+  const handleClick = (e) => {
+    const trackId = e.currentTarget.getAttribute('data-track-id');
     const proceed = !!(
       !e.target.classList.contains("i-tune__card--favourite") &&
       trackId !== null
@@ -289,6 +286,7 @@
     }
   };
 
+
   /**
    * main function that adds events on search, modal and list and calls callback
    */
@@ -298,4 +296,7 @@
     list.addEventListener("click", fetchFavourites);
   };
   init();
-})();
+
+
+}());
+
