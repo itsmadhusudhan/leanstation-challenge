@@ -27,7 +27,9 @@
         typeof payload === "function"
           ? { ...this.getState(), ...payload() }
           : { ...this.getState(), ...payload };
-      typeof cb === "function" ? pubsub.emit("state change", cb) :pubsub.emit("state change", currentState) ;
+      typeof cb === "function"
+        ? pubsub.emit("state change", cb)
+        : pubsub.emit("state change", currentState);
     }
 
     function compose() {}
@@ -39,12 +41,12 @@
 const Pubsub = function() {
   let pubsub = {
     _ispubsub: true,
-    counter:0,
+    counter: 0,
     events: {},
     watch(eventName, cb) {
       this.events[eventName] = this.events[eventName] || [];
       !this.events[eventName].includes(cb) && this.events[eventName].push(cb);
-      return "watch_"+this.counter++;
+      return "watch_" + this.counter++;
     },
     emit(eventName, data) {
       if (this.events[eventName] && this.events[eventName].length !== 0) {
@@ -58,7 +60,7 @@ const Pubsub = function() {
     },
     unsubscribe(eventName, cb) {
       if (this.events[eventName]) {
-        this.events[eventName] = this.events[eventName].filter(fn => cb!== fn);
+        this.events[eventName] = this.events[eventName].filter(fn => cb !== fn);
       }
     }
   };
@@ -83,7 +85,7 @@ const pubsub = new Pubsub();
 // console.log(store.getState())
 // store.commit({mydata:"hello"})
 // console.log(store.getState())
-const nameHandler = (name) => {
+const nameHandler = name => {
   return { ...store.getState(), ...{ mydata: name } };
 };
 
@@ -97,21 +99,26 @@ const dataHandler = async () => {
 };
 
 dataHandler().then(data => {
-  store.commit({ results: data.results })
+  store.commit({ results: data.results });
 });
 
 class otherComp extends Component {
   constructor(props) {
     super(props);
-    this.something=this.something.bind(this)
-
+    this.something = this.something.bind(this);
+    const id = store.watch("state change", this.render.bind(this));
   }
-  something(mydata){
+  something(mydata) {
     console.log(mydata);
-  };
+  }
   render() {
     // console.log(store.getState());
-    console.log(this.props.data)
+    // console.log(this.props.data);
+
+    store.getState()["results"]
+      ? (document.getElementById("root").innerHTML =
+      store.getState()["results"].map(res=>`<p>${res.artistName}</p>`).join(''))
+      : (document.getElementById("root").innerHTML = "nothing");
     // this.something(store.getState());
   }
 }
@@ -119,27 +126,33 @@ class otherComp extends Component {
 class myComp extends Component {
   constructor(props) {
     super(props);
-    this.something=this.something.bind(this);
-   const id= store.watch("state change",this.render.bind(this))
+    this.something = this.something.bind(this);
+    const id = store.watch("state change", this.render.bind(this));
   }
-  something(mydata){
+  something(mydata) {
     console.log(mydata);
     return mydata;
-  };
+  }
 
   render() {
-    store.unsubscribe("state change",this.render.bind(this))
-    this.something(store.getState());
-    // const comp2=new otherComp({isChild:true,data:store.getState()});
-    // comp2.render()
+    // store.unsubscribe("state change", this.render.bind(this));
+    // this.something(store.getState());
+    store.getState()["results"]
+    ? (document.getElementById("root").innerHTML =
+    store.getState().results.map(res=>`<p>${res.artistName}</p>`).join(''))
+    : (document.getElementById("root").innerHTML = "nothing");
+
   }
 }
 
-const comp = new myComp({isChild:false});
+// const comp = new myComp({ isChild: false });
 
 // store.emit('mydata',()=>nameHandler("hello"));
 // store.emit('mydata',()=>nameHandler("hellosss"));
 // store.emit('mydata',()=>nameHandler("hellowr4"));
 // store.emit('mydata',()=>nameHandler("hello23423"));
 
-comp.render();
+// comp.render();
+const comp2 = new otherComp({ isChild: false, data: store.getState() });
+comp2.render();
+
